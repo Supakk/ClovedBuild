@@ -1,0 +1,9 @@
+---
+// A still render of the 3D house, pre-rendered to /renders (scripts/render-thumbs.mjs). No JavaScript.
+interface Props { shot: string; alt: string; ratio: number; class?: string; priority?: boolean; width: number; height: number }
+const { shot, alt, ratio, class: cls = '', priority = false, width, height } = Astro.props;
+---
+<div class:list={['relative w-full max-w-full', cls]} style={`aspect-ratio:${ratio}`}>
+  <img src={`/renders/shot-${shot}.webp`} alt={alt} width={width} height={height} decoding="async"
+    loading={priority ? 'eager' : 'lazy'} fetchpriority={priority ? 'high' : 'auto'} class="absolute inset-0 size-full object-contain" />
+</div>
