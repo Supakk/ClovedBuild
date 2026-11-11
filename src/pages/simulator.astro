@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Simulator from '../components/sim/Simulator';
+---
+
+<Layout title="House Simulator · ClovedBuild" description="Lay out your plot in square wah, place a house, furniture, people and pets, and move everything from above.">
+  <Simulator client:only="react">
+    <div slot="fallback" class="grid min-h-dvh place-items-center text-sm font-semibold text-muted">Loading the simulator… · กำลังโหลดซิมูเลเตอร์…</div>
+  </Simulator>
+</Layout>
