@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import WhyChooseUs from '../components/WhyChooseUs.astro';
+import Faq from '../components/Faq.astro';
+import Footer from '../components/Footer.astro';
+import HouseStudio from '../components/HouseStudio';
+import StyleGallery from '../components/StyleGallery';
+import ContactSection from '../components/ContactSection';
+import T from '../components/T.astro';
+import SlideBtn from '../components/SlideBtn.astro';
+import { CURSOR, circled } from '../lib/motionMarkup';
+---
+
+<Layout smooth title="ClovedBuild · Design your dream home in 3D" description="Design your house yourself: plot, rooms and roof on an architect-style plan, 26 Thai, Japanese, European and modern styles in 3D, checked against Thai building rules. Free.">
+  <div id="top"></div>
+  <Header />
+  <main>
+    <Hero />
+
+    <About />
+
+    <section id="styles" aria-label="House styles" class="sec border-y border-line/60 bg-soft">
+      <div class="wrap">
+        <div class="mb-8 text-center">
+          <h2 data-reveal class="text-[clamp(22px,3vw,30px)] font-bold"><T en="Start from a house style" th="เริ่มจากแบบบ้านที่ชอบ" /></h2>
+          <p data-reveal style="--d:80ms" class="mx-auto mt-2 max-w-[560px] text-sm font-medium text-muted">
+            <T en="Pick one and change anything: size, rooms, windows, roof and colours." th="เลือกสักแบบ แล้วปรับได้ทุกอย่าง ทั้งขนาด ห้อง หน้าต่าง หลังคา และสี" />
+          </p>
+        </div>
+        <StyleGallery client:visible />
+      </div>
+    </section>
+
+    <WhyChooseUs />
+
+    <section id="studio" aria-label="Design every room" class="sec">
+      <div class="wrap">
+        <div class="mb-7 text-center">
+          <h2 data-reveal class="text-[clamp(22px,3vw,30px)] font-bold"><T en={`Design ${circled('Every Room')}`} th={`ออกแบบได้${circled('ทุกห้อง')}`} /></h2>
+          <p class="mx-auto mt-2 max-w-[560px] text-sm font-medium text-muted">
+            <T en="Turn the house to any of its four sides, open a floor, then tap a room to change what it is and how it looks." th="หมุนบ้านได้ 4 ด้าน เปิดดูแต่ละชั้น แล้วแตะห้องเพื่อเปลี่ยนประเภทและการตกแต่ง" />
+          </p>
+          <div data-reveal style="--d:120ms" class="mt-5 flex flex-wrap justify-center gap-3">
+            <SlideBtn href="/builder" en="Design your own house" th="ออกแบบบ้านของคุณเอง" icon='<svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.3 1.4 14.6 4.7 5.4 13.9 1.4 14.6 2.1 10.6z"/></svg>' />
+            <SlideBtn ghost href="/simulator" en="Open the house simulator" th="เปิดซิมูเลเตอร์บ้าน" icon='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M8 1.5 14 4.8v6.4L8 14.5 2 11.2V4.8zM2 4.8 8 8l6-3.2M8 8v6.5"/></svg>' />
+          </div>
+        </div>
+        <div data-reveal style="--d:200ms"><HouseStudio client:visible /></div>
+        <p class="mt-4 flex items-center justify-center gap-1.5 text-xs font-semibold text-muted">
+          <span set:html={CURSOR} />
+          <span class="shimmer-text"><T en="Psst… it’s interactive! Tap a room to design it." th="ลองเลย… แตะห้องเพื่อแต่งได้ทันที" /></span>
+        </p>
+      </div>
+    </section>
+
+    <Faq />
+
+    <ContactSection client:visible />
+  </main>
+  <Footer />
+</Layout>

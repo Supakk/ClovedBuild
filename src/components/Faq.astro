@@ -1,0 +1,41 @@
+---
+import T from './T.astro';
+
+const qa = [
+  { en: 'Is it free? Do I need an account?', th: 'ใช้ฟรีไหม ต้องสมัครสมาชิกหรือเปล่า?',
+    aen: 'Free, and no account. Your designs are saved in this browser; use “Save” in the builder to keep several, or export a plot file from the simulator menu.',
+    ath: 'ฟรี ไม่ต้องสมัคร แบบบ้านจะบันทึกไว้ในเบราว์เซอร์นี้ กด “บันทึก” ในหน้าออกแบบเพื่อเก็บไว้หลายแบบ หรือส่งออกไฟล์แปลงจากเมนูในซิมูเลเตอร์' },
+  { en: 'Which building rules does it check?', th: 'ตรวจตามกฎหมายอะไรบ้าง?',
+    aen: 'Thailand’s Ministerial Regulation No. 55 (B.E. 2543): open space of at least 30%, distance from the boundary (50 cm for solid walls, 2 m or 3 m for walls with windows), floor height 2.60 m, bedrooms of 8 m², stairs and corridors. Bangkok and some areas are stricter, so confirm with your local office or an architect.',
+    ath: 'อ้างอิงกฎกระทรวงฉบับที่ 55 (พ.ศ. 2543) เช่น ที่ว่างอย่างน้อย 30% ระยะห่างจากแนวเขต (ผนังทึบ 50 ซม. ผนังมีหน้าต่าง 2 หรือ 3 ม.) ความสูงชั้น 2.60 ม. ห้องนอน 8 ตร.ม. บันไดและทางเดิน กรุงเทพฯ และบางพื้นที่เข้มกว่านี้ ควรตรวจกับสำนักงานเขตหรือสถาปนิกอีกครั้ง' },
+  { en: 'How accurate is the cost?', th: 'งบประมาณแม่นแค่ไหน?',
+    aen: 'It is a rough guide from floor area, roof type, finishes and furniture, to compare options. A contractor’s quote depends on soil, structure, materials and region.',
+    ath: 'เป็นตัวเลขคร่าวๆ จากพื้นที่ใช้สอย ทรงหลังคา วัสดุพื้น และเฟอร์นิเจอร์ เอาไว้เปรียบเทียบแบบ ราคาจริงจากผู้รับเหมาขึ้นกับดิน โครงสร้าง วัสดุ และพื้นที่' },
+  { en: 'Can I make L-shaped rooms, a twin house or a raised Thai house?', th: 'ทำห้องตัว L บ้านแฝด หรือเรือนไทยใต้ถุนสูงได้ไหม?',
+    aen: 'Yes. Pick a room and choose L-shape or angled wall. In the House step choose “Twin house” or a smaller upper floor for 1.5 storeys, or start from the Thai stilt house, Minka, Tudor and other styles.',
+    ath: 'ได้ แตะห้องแล้วเลือก “ตัว L” หรือ “ผนังเอียง” ขั้นตอน “ตัวบ้าน” เลือก “บ้านแฝด” หรือทำชั้นบนเล็กลงเป็นบ้านชั้นครึ่ง หรือเริ่มจากแบบเรือนไทยใต้ถุนสูง มินกะ ทิวดอร์ และแบบอื่นๆ' },
+  { en: 'Does it work on a phone?', th: 'ใช้บนมือถือได้ไหม?',
+    aen: 'Yes. Pinch with two fingers to zoom the plan, drag with one finger to look around, and tap a room to edit it.',
+    ath: 'ได้ ใช้สองนิ้วซูมผัง ลากนิ้วเดียวเพื่อเลื่อนดู และแตะห้องเพื่อแก้ไข' },
+  { en: 'Can I give the plan to an architect?', th: 'เอาแบบไปให้สถาปนิกได้ไหม?',
+    aen: 'Use it to show what you want: the plan, the rooms and the look. An architect or engineer still needs to draw the construction drawings and sign the permit application.',
+    ath: 'ใช้เพื่อสื่อสิ่งที่ต้องการได้ ทั้งผัง ห้อง และหน้าตาบ้าน แต่แบบก่อสร้างและการยื่นขออนุญาตยังต้องให้สถาปนิกหรือวิศวกรเขียนและลงนาม' },
+];
+---
+
+<section id="faq" aria-label="Questions" class="faq sec border-y border-line/60 bg-soft">
+  <div class="wrap max-w-[760px]">
+    <h2 data-reveal class="sec-title"><T en="Questions" th="คำถามที่พบบ่อย" /></h2>
+    <div class="grid gap-2.5">
+      {qa.map((q, i) => (
+        <details data-reveal style={`--d:${i * 60}ms`} class="group rounded-2xl bg-card shadow-[0_2px_10px_rgb(110_60_35/0.07)]" open={i === 0}>
+          <summary class="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-sm font-bold select-none">
+            <T en={q.en} th={q.th} />
+            <span class="plus grid size-7 flex-none place-items-center rounded-full bg-soft text-lg leading-none">+</span>
+          </summary>
+          <div><div><p class="px-5 pb-5 text-[13px] leading-relaxed font-medium text-muted"><T en={q.aen} th={q.ath} /></p></div></div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

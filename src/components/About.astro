@@ -1,0 +1,34 @@
+---
+import HouseShot from './HouseShot.astro';
+import T from './T.astro';
+
+const steps = [
+  { n: '1', en: 'Land', th: 'ที่ดิน', den: 'Size in wah, where the house sits', dth: 'ขนาดเป็นวา และตำแหน่งบ้าน' },
+  { n: '2', en: 'House', th: 'ตัวบ้าน', den: 'Footprint, floors, twin or 1.5-storey', dth: 'ขนาด จำนวนชั้น บ้านแฝด ชั้นครึ่ง' },
+  { n: '3', en: 'Rooms', th: 'ห้อง', den: 'Drag rooms, L-shapes, windows', dth: 'ลากห้อง ห้องตัว L ย้ายหน้าต่าง' },
+  { n: '4', en: 'Style', th: 'สไตล์', den: 'Roof, walls and colours', dth: 'หลังคา ผิวผนัง และสี' },
+  { n: '5', en: 'Check', th: 'ตรวจ', den: 'Rules, area and rough cost', dth: 'กฎหมาย พื้นที่ และงบคร่าวๆ' },
+];
+---
+
+<section id="how" aria-label="How it works" class="sec">
+  <div class="wrap grid items-center gap-8 md:grid-cols-2 md:gap-12">
+    <div data-reveal><HouseShot shot="about" ratio={1.15} width={1100} height={960} alt="A two-storey house opened up to show its rooms" /></div>
+    <div data-reveal style="--d:120ms">
+      <h2 class="text-[clamp(22px,2.8vw,28px)] leading-[1.35] font-bold"><T en="Your house in<br />five easy steps" th="ออกแบบบ้านเองได้<br />ใน 5 ขั้นตอน" /></h2>
+      <p class="mt-4 mb-6 max-w-[440px] text-[12.5px] leading-[1.75] font-semibold">
+        <T en="No drawing skills needed. Tap tiles and drag rooms; the plan, the 3D view and the advice update as you go." th="ไม่ต้องวาดเป็น แค่แตะและลากห้อง ผัง ภาพ 3 มิติ และคำแนะนำจะอัปเดตตามทันที" />
+      </p>
+      <ol class="grid gap-2.5">
+        {steps.map((s, i) => (
+          <li data-reveal style={`--d:${200 + i * 70}ms`}>
+            <a href="/builder" class="group lift flex items-center gap-3.5 rounded-xl bg-card px-3.5 py-2.5 no-underline shadow-[0_2px_8px_rgb(110_60_35/0.06)]">
+              <b class="grid size-8 flex-none place-items-center rounded-full bg-ink text-sm text-bg transition-[scale,background-color] duration-500 group-hover:scale-110 group-hover:bg-accent">{s.n}</b>
+              <span class="grid"><b class="text-sm"><T en={s.en} th={s.th} /></b><span class="text-[11.5px] font-medium text-muted"><T en={s.den} th={s.dth} /></span></span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>

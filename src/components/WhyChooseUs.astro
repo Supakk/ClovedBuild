@@ -1,0 +1,29 @@
+---
+import { CostFeatIcon, CubeFeatIcon, LawFeatIcon, PlanFeatIcon, SimFeatIcon } from './icons';
+import T from './T.astro';
+import { circled } from '../lib/motionMarkup';
+
+const items = [
+  { Icon: PlanFeatIcon, href: '/builder', en: 'Architect-style<br />floor plan', th: 'ผังบ้าน<br />แบบสถาปนิก' },
+  { Icon: CubeFeatIcon, href: '/builder', en: '3D that turns<br />to every side', th: 'ภาพ 3 มิติ<br />หมุนได้ 4 ด้าน' },
+  { Icon: LawFeatIcon, href: '#faq', en: `Checks Thai<br />${circled('building law')}`, th: `ตรวจตาม<br />${circled('กฎหมายอาคาร')}` },
+  { Icon: SimFeatIcon, href: '/simulator', en: 'Furnish it in<br />the simulator', th: 'จัดของใน<br />ซิมูเลเตอร์' },
+  { Icon: CostFeatIcon, href: '/builder', en: 'Area and<br />rough cost', th: 'พื้นที่และ<br />งบคร่าวๆ' },
+];
+---
+
+<section id="features" aria-label="Features" class="sec bg-band">
+  <div class="wrap">
+    <h2 data-reveal class="sec-title mb-[30px]"><T en="What you can do" th="ทำอะไรได้บ้าง" /></h2>
+    <div class="grid grid-cols-2 gap-[18px] md:grid-cols-5">
+      {items.map(({ Icon, href, en, th }, i) => (
+        <a href={href} data-reveal style={`--d:${i * 80}ms`} class={`feat feat-${i + 1} text-center text-sm leading-[1.45] font-medium text-muted no-underline transition-colors duration-300 hover:text-ink last:max-md:col-span-2`}>
+          <i class="feat-ico mx-auto mb-3 grid size-[62px] place-items-center rounded-full bg-card text-ink shadow-[0_4px_14px_rgb(110_60_35/0.12)]">
+            <Icon className="size-[30px]" />
+          </i>
+          <T en={en} th={th} />
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

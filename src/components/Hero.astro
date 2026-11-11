@@ -1,0 +1,42 @@
+---
+import HouseShot from './HouseShot.astro';
+import SlideBtn from './SlideBtn.astro';
+import T from './T.astro';
+import { STARBURST, marked } from '../lib/motionMarkup';
+import { HOUSE_PRESETS } from '../lib/plan/spec';
+const n = HOUSE_PRESETS.length;
+
+const homeIcon = '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.2.6 7.6h2.1V15h4V10.5h2.6V15h4V7.6h2.1z"/></svg>';
+---
+
+<section aria-label="Introduction" class="pt-2 pb-10">
+  <div class="wrap grid items-center gap-4 md:grid-cols-[0.9fr_1.1fr]">
+    <div>
+      <h1 style="--d:150ms" class="enter text-[clamp(38px,5.6vw,56px)] leading-[1.12] font-extrabold tracking-[-0.01em]">
+        <T en={`Design Your<br />${marked('Dream Home', true)}`} th={`ออกแบบ<br />${marked('บ้านในฝัน', true)}`} />
+      </h1>
+      <p style="--d:300ms" class="enter mt-5 mb-[26px] max-w-[350px] text-[12.5px] leading-[1.75] font-semibold">
+        <T en={`Draw your plot and rooms on an architect-style plan, see it in 3D, pick from ${n} Thai, Japanese, European and modern styles, and check it against Thai building rules. Free, in your browser.`} th={`วาดที่ดินและห้องบนผังแบบสถาปนิก ดูเป็น 3 มิติทันที เลือกได้ ${n} สไตล์ทั้งไทย ญี่ปุ่น ยุโรป โมเดิร์น และตรวจตามกฎหมายอาคารไทยให้อัตโนมัติ ใช้ฟรีบนเบราว์เซอร์`} />
+      </p>
+      <div style="--d:450ms" class="enter flex flex-wrap gap-4">
+        <SlideBtn href="/builder" en="Start designing" th="เริ่มออกแบบ" icon={homeIcon} class="shadow-[0_14px_30px_-10px_rgb(60_30_15/0.45)]" />
+        <a class="btn btn-ghost press group gap-2 border-transparent bg-ink/5 hover:bg-ink/10" href="#styles">
+          <span class="text-ink/30" set:html={STARBURST} />
+          <T en="Browse styles" th="ดูแบบบ้าน" />
+          <span class="rounded-md bg-ink px-1.5 py-0.5 text-[11px] leading-tight text-bg">{n}</span>
+        </a>
+      </div>
+    </div>
+    <div style="--d:600ms" class="enter max-md:-order-1">
+      <HouseShot
+        priority
+        shot="hero"
+        ratio={1.18}
+        width={1180}
+        height={1000}
+        class="animate-float motion-reduce:animate-none"
+        alt="A house designed in ClovedBuild, shown in 3D"
+      />
+    </div>
+  </div>
+</section>
