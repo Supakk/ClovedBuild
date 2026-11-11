@@ -1,0 +1,24 @@
+---
+// Renders every still picture once, for scripts/render-thumbs.mjs. Not linked from the site.
+---
+<html lang="en"><head><meta charset="utf-8" /><meta name="robots" content="noindex" /><title>Renders</title></head>
+<body><p id="state">rendering…</p>
+<script>
+  import { getShot, type ShotKey } from '../../lib/house/snapshots';
+  import { houseThumb } from '../../lib/plan/thumbs';
+  import { HOUSE_PRESETS, presetSpec } from '../../lib/plan/spec';
+  import { itemThumb } from '../../lib/sim/thumbs';
+  import { CATALOG } from '../../lib/sim/types';
+  const out: Record<string, string> = {};
+  // ?only=house-luxe,house-thaigable renders just those (handy while tuning one design).
+  const only = new URLSearchParams(location.search).get('only')?.split(',');
+  const want = (k: string) => !only || only.includes(k);
+  (async () => {
+    for (const k of ['hero', 'about', 'nyc', 'santorini', 'rio'] as ShotKey[]) { if (!want(`shot-${k}`)) continue; const u = await getShot(k); if (u) out[`shot-${k}`] = u; }
+    for (const p of HOUSE_PRESETS) { if (!want(`house-${p.id}`)) continue; const u = await houseThumb(`__${p.id}`, presetSpec(p.id), 560, 420); if (u) out[`house-${p.id}`] = u; }
+    for (const g of CATALOG) for (const it of g.items) { if (!want(`item-${it.key}`)) continue; const u = await itemThumb(it.key, it.make); if (u) out[`item-${it.key}`] = u; }
+    (window as any).__renders = out;
+    document.getElementById('state')!.textContent = `done ${Object.keys(out).length}`;
+  })();
+</script>
+</body></html>
