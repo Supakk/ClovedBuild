@@ -1,0 +1,88 @@
+---
+import Logo from './Logo.astro';
+import { MenuIcon } from './icons';
+import T from './T.astro';
+import LangToggle from './LangToggle';
+import SlideBtn from './SlideBtn.astro';
+
+const links = [
+  { href: '#top', label: 'Home', th: 'หน้าแรก' },
+  { href: '#how', label: 'How it works', th: 'วิธีใช้' },
+  { href: '#styles', label: 'House styles', th: 'แบบบ้าน' },
+  { href: '#features', label: 'Features', th: 'ทำอะไรได้' },
+  { href: '#studio', label: 'Try it', th: 'ลองแต่งห้อง' },
+  { href: '#faq', label: 'FAQ', th: 'คำถาม' },
+  { href: '#contact', label: 'Contact', th: 'ติดต่อ' },
+];
+const pencil = '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.3 1.4 14.6 4.7 5.4 13.9 1.4 14.6 2.1 10.6z"/></svg>';
+---
+
+<header class="site-header sticky top-0 z-40" data-header>
+  <div class="wrap flex items-center justify-between gap-3 py-[16px]">
+    <div class="animate-header-rise will-change-transform"><Logo href="#top" /></div>
+    <nav aria-label="Main" class="animate-nav-fade hidden min-w-0 gap-0.5 xl:flex" data-spy>
+      {links.map((l) => (
+        <a href={l.href} class="nav-pill text-[13px] font-semibold whitespace-nowrap text-muted no-underline hover:text-ink aria-[current=true]:text-ink"><T en={l.label} th={l.th} /></a>
+      ))}
+    </nav>
+    <div class="animate-nav-fade flex items-center gap-2 sm:gap-3">
+      <LangToggle client:load />
+      <SlideBtn small href="/builder" en="Start designing" th="เริ่มออกแบบ" icon={pencil} class="max-sm:hidden" />
+      <details class="menu relative xl:hidden">
+        <summary class="icon-btn size-10 list-none shadow-none ring-1 ring-line" aria-label="Menu"><MenuIcon className="size-5" /></summary>
+        <div class="menu-panel absolute top-12 right-0 z-50 grid w-60 gap-1 rounded-2xl bg-card p-2 shadow-[0_24px_60px_-12px_rgb(80_40_20/0.35)]">
+          {links.map((l) => <a href={l.href} class="rounded-xl px-3.5 py-2.5 text-sm font-semibold no-underline hover:bg-soft"><T en={l.label} th={l.th} /></a>)}
+          <hr class="my-1 border-line" />
+          <a href="/builder" class="rounded-xl px-3.5 py-2.5 text-sm font-bold no-underline hover:bg-soft"><T en="House builder" th="ออกแบบบ้าน" /></a>
+          <a href="/simulator" class="rounded-xl px-3.5 py-2.5 text-sm font-bold no-underline hover:bg-soft"><T en="Simulator" th="ซิมูเลเตอร์" /></a>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Close the phone menu after a pick, on outside taps and on Escape.
+  const menu = document.querySelector<HTMLDetailsElement>('details.menu');
+  if (menu) {
+    menu.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) menu.open = false; });
+    document.addEventListener('click', (e) => { if (menu.open && !menu.contains(e.target as Node)) menu.open = false; });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') menu.open = false; });
+  }
+  // Highlight the section on screen in the top menu: the last section whose top has passed under the header.
+  // Worked out from scroll position (not an IntersectionObserver), so "Home" lights up again at the top
+  // and short sections near the end (FAQ, Contact) are not skipped.
+  const nav = document.querySelector('[data-spy]');
+  if (nav) {
+    const links = [...nav.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
+    const ids = links.map((a) => a.getAttribute('href')!.slice(1));
+    const set = (id: string) => links.forEach((a) => a.setAttribute('aria-current', String(a.getAttribute('href') === `#${id}`)));
+    let locked = '', unlock = 0, raf = 0;
+    const pick = () => {
+      raf = 0;
+      if (locked) return set(locked);
+      const doc = document.documentElement;
+      if (scrollY + innerHeight >= doc.scrollHeight - 4) return set(ids[ids.length - 1]); // the very bottom: the last section
+      let cur = ids[0];
+      for (const id of ids.slice(1)) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= 120) cur = id;
+      }
+      set(cur);
+    };
+    addEventListener('scroll', () => {
+      if (!raf) raf = requestAnimationFrame(pick);
+      // A clicked link stays lit until the page stops gliding.
+      if (locked) { clearTimeout(unlock); unlock = window.setTimeout(() => { locked = ''; pick(); }, 180); }
+    }, { passive: true });
+    addEventListener('resize', pick);
+    nav.addEventListener('click', (e) => {
+      const a = (e.target as HTMLElement).closest('a[href^="#"]');
+      if (!a) return;
+      locked = a.getAttribute('href')!.slice(1);
+      set(locked);
+      clearTimeout(unlock); unlock = window.setTimeout(() => { locked = ''; pick(); }, 1500);
+    });
+    pick();
+  }
+</script>

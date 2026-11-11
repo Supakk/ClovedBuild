@@ -1,0 +1,38 @@
+---
+import { LogoStack } from './LogoMark';
+import T from './T.astro';
+import ShareButtons from './ShareButtons';
+
+const columns = [
+  { title: ['Design', 'ออกแบบ'], links: [['/builder', 'House builder', 'เครื่องมือออกแบบบ้าน'], ['/simulator', 'Simulator', 'ซิมูเลเตอร์'], ['#styles', 'House styles', 'แบบบ้านหลายสไตล์'], ['#studio', '3D room studio', 'แต่งห้อง 3 มิติ']] },
+  { title: ['Help', 'ช่วยเหลือ'], links: [['#how', 'How it works', 'วิธีใช้งาน'], ['#faq', 'Questions', 'คำถามที่พบบ่อย'], ['#faq', 'Building rules', 'กฎหมายอาคาร'], ['#contact', 'Contact', 'ติดต่อเรา']] },
+];
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-band pt-[52px] pb-[26px]">
+  <div class="wrap">
+    <div class="grid grid-cols-2 gap-7 md:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+      <div class="col-span-2 md:col-span-1">
+        <a href="#top" aria-label="ClovedBuild" class="inline-flex no-underline"><LogoStack /></a>
+        <p class="mt-4 max-w-[260px] text-[11.5px] leading-normal font-semibold"><T en="Design your dream home yourself, room by room, in 3D." th="ออกแบบบ้านในฝันได้ด้วยตัวเอง ทีละห้อง เห็นเป็น 3 มิติ" /></p>
+      </div>
+      {columns.map((c) => (
+        <div>
+          <h4 class="mb-[18px] text-[13px] font-bold"><T en={c.title[0]} th={c.title[1]} /></h4>
+          <ul class="grid gap-3 text-[11.5px] font-semibold">
+            {c.links.map(([href, en, th]) => <li><a href={href} class="text-ink/80 no-underline transition-colors duration-300 hover:text-accent"><T en={en} th={th} /></a></li>)}
+          </ul>
+        </div>
+      ))}
+      <div class="col-span-2 md:col-span-1">
+        <h4 class="mb-[18px] text-[13px] font-bold"><T en="Share ClovedBuild" th="แชร์ ClovedBuild" /></h4>
+        <ShareButtons client:visible />
+      </div>
+    </div>
+    <div class="mt-[52px] flex flex-wrap justify-between gap-3 text-[11.5px] font-medium">
+      <span>© {year} ClovedBuild</span>
+      <span>Design by : Piyush Prajapat</span>
+    </div>
+  </div>
+</footer>

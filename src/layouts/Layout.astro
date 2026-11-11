@@ -1,0 +1,73 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Glide to in-page links (content pages only, not the apps). The wheel itself stays native. */
+  smooth?: boolean;
+}
+const {
+  title = 'ClovedBuild · Design your dream home in 3D',
+  description = 'Design your house yourself in 3D, room by room.',
+  smooth = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Our own two variable fonts (every weight in one file each), fetched first: no wait on another site's stylesheet. -->
+    <link rel="preload" href="/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/noto-sans-thai.woff2" as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      // Language before first paint: saved choice, else the browser's.
+      try { var l = localStorage.getItem('lang'); if (l !== 'th' && l !== 'en') l = /^th/i.test(navigator.language || '') ? 'th' : 'en'; document.documentElement.lang = l; } catch (e) {}
+    </script>
+    <title>{title}</title>
+  </head>
+  <body data-smooth={smooth ? '' : undefined}>
+    <slot />
+    <script>
+      import { initSmoothScroll } from '../lib/smoothScroll';
+      import { initHoverPolish } from '../lib/hoverPolish';
+      import { arrive, popOpen } from '../lib/springs';
+      if (document.body.dataset.smooth !== undefined) initSmoothScroll();
+      initHoverPolish();
+      // Scroll reveal. Elements stay visible if this never runs.
+      const root = document.documentElement;
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+        const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            const el = e.target as HTMLElement;
+            io.unobserve(el);
+            // Spring in (Motion), with the element's own --d as a stagger delay.
+            el.classList.add('is-in');
+            arrive(el, (parseFloat(getComputedStyle(el).getPropertyValue('--d')) || 0) / 1000);
+          }
+        }, { rootMargin: '0px 0px -8% 0px' });
+        items.forEach((el) => {
+          const r = el.getBoundingClientRect();
+          if (r.top < innerHeight) el.classList.add('is-in'); else io.observe(el);
+        });
+        root.classList.add('js-reveal');
+      }
+      // The phone menu springs open.
+      const menu = document.querySelector<HTMLDetailsElement>('details.menu');
+      menu?.addEventListener('toggle', () => { const p = menu.querySelector<HTMLElement>('.menu-panel'); if (menu.open && p) popOpen(p); });
+      // Header shadow once the page has scrolled.
+      const header = document.querySelector<HTMLElement>('[data-header]');
+      if (header) {
+        const onScroll = () => header.classList.toggle('is-scrolled', scrollY > 8);
+        addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      }
+    </script>
+  </body>
+</html>
