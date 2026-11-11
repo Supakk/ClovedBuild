@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Builder from '../components/builder/Builder';
+---
+
+<Layout title="House Builder · ClovedBuild" description="Set your plot and house size, draw each floor on an architect-style plan, pick a roof and style, and check the design against real building rules.">
+  <Builder client:only="react">
+    <div slot="fallback" class="grid min-h-dvh place-items-center text-sm font-semibold text-muted">Loading the house builder… · กำลังโหลดเครื่องมือออกแบบบ้าน…</div>
+  </Builder>
+</Layout>
