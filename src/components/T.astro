@@ -1,0 +1,6 @@
+---
+// Both languages in the markup; CSS shows the one matching <html lang>. Text is ours, so set:html allows <br />.
+interface Props { en: string; th: string }
+const { en, th } = Astro.props;
+---
+<span data-en set:html={en} /><span data-th lang="th" set:html={th} />

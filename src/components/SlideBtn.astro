@@ -1,0 +1,13 @@
+---
+// Alcove-style button: the icon slides out to the left as an arrow slides in from the right.
+import T from './T.astro';
+import { ARROW } from '../lib/motionMarkup';
+interface Props { href: string; en: string; th: string; icon: string; ghost?: boolean; small?: boolean; class?: string; style?: string }
+const { href, en, th, icon, ghost = false, small = false, class: cls = '', style } = Astro.props;
+---
+<a href={href} style={style} class:list={['btn btn-slide press', ghost && 'btn-ghost', small && 'btn-slide-sm', cls]}>
+  <span class="bs-icon" set:html={icon} />
+  <span class="bs-label"><T en={en} th={th} /></span>
+  <span class="bs-arrow" set:html={ARROW} />
+  <slot />
+</a>

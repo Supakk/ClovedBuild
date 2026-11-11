@@ -1,0 +1,6 @@
+---
+import { LogoPill } from './LogoMark';
+const { class: cls = '', href = '/' } = Astro.props;
+---
+
+<a href={href} aria-label="ClovedBuild" class:list={['inline-flex no-underline', cls]}><LogoPill /></a>
