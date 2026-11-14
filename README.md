@@ -1,177 +1,118 @@
-# ClovedBuild – Dream Home
+# ClovedBuild
 
-เว็บอสังหาฯ โทนพีช พร้อมตัวออกแบบบ้าน 3D แบบ isometric (หมุนได้ 4 ด้าน และออกแบบได้ทีละห้อง)
-สร้างด้วย **Astro 7 + React 19 + Tailwind CSS 4 + three.js**
+A house-design website with a 3D, isometric home designer: pick a plot, shape the house, lay out the rooms room by room, style it, check it against building rules, then walk through it in a simulator. It is a design tool, not a real-estate listing site.
 
-## เริ่มใช้งาน
+Built with **Astro 7, React 19, Tailwind CSS 4, three.js** and **Motion** (motion.dev) for spring animation. The interface is available in English and Thai.
 
-ต้องใช้ Node.js **22.23.4 ขึ้นไป** (Astro 7 กำหนดไว้)
+## Getting started
+
+Requires Node.js **22.23.4 or newer**.
 
 ```bash
 npm install
 npm run dev      # http://localhost:4321
-npm run build    # สร้างไฟล์ static ไว้ที่ dist/
-npm run preview  # เปิดดูผลลัพธ์จาก dist/
+npm run build    # static site in dist/
+npm run preview  # serve dist/
 ```
 
-## โครงสร้าง
+## Pages
+
+| Route | What it is |
+|---|---|
+| `/` | Landing page: how it works, style gallery, features, a live 3D studio, FAQ and contact |
+| `/builder` | The house designer (5 steps: Land, House, Rooms, Style, Check) |
+| `/simulator` | Place a house, furniture, trees, cars and people on a plot |
+
+Open a ready-made house directly with `/builder?preset=<id>` or `/simulator?preset=<id>`.
+
+## House Builder
+
+A 5-step flow with a step bar on top and Back / Next buttons at the bottom. The workspace switches between **Plan** (architect-style drawing) and **3D** at every step. On phones the plan sits on top and the controls below.
+
+- **Land**: plot size in *wah* (1 wah = 2 m), house position and setbacks, with a site plan showing the road and the 2 m window line.
+- **House**: house size, 1 to 3 storeys, storey height, and 26 ready-made styles to start from. Layout templates scale to any footprint.
+- **Rooms**: drag room icons onto the plan, resize and move them, and edit type, floor, wall colour and furniture per room. 13 room types (stairs, garage, carport, laundry, storage, terrace and more), L-shaped and angled rooms, kitchen and bathroom variants.
+  - **Doors**: every door has a handle and can be dragged along any wall, including around corners. Single, double, sliding and open-archway types; width and swing direction are adjustable. Doors on shared walls connect two rooms; doors on outside walls are entrances.
+  - **Windows**: move them, change their kind (window, glass wall, high window, door) and width.
+  - **Posts**: drop square or round posts anywhere; they are modelled floor to ceiling and block furniture in the simulator.
+  - **Furniture**: tap a piece, drag it anywhere inside the room, rotate it in 90° steps, or reset it.
+- **Style**: roof (flat, roof terrace, gable, hip, mono-pitch, Thai, hip-and-gable, gambrel), wall finish (plaster, wood, siding, brick, half-timber, stone, marble, metal), colours, and amount of glass.
+- **Check**: a rule check against Thai Ministerial Regulation No. 55 (B.E. 2543) plus comfort advice. Examples: open space of at least 30% of the largest floor, openings at least 2 m from the boundary (3 m above 9 m height), bedrooms of at least 8 m² and 2.5 m wide, ceiling height of at least 2.6 m, stair and corridor dimensions. The rules live in `src/lib/plan/rules.ts`.
+
+Designs are saved in the browser (`localStorage`) under "My designs". **Place in simulator** sends the plot and house to the simulator.
+
+Code: `src/lib/plan/` (`spec.ts` data, styles, templates and automatic doors and windows; `rules.ts`; `build3d.ts` builds the 3D house from a spec; `specStage.ts`; `storage.ts`) and `src/components/builder/`.
+
+## House Simulator
+
+- Plot size in wah, shown as sq. wah, rai-ngan-wah and m²; the grid is 1 square wah (2 × 2 m) per cell.
+- 3D isometric view (rotate in 90° steps) and a top view for dragging.
+- Drag items from the catalogue onto the plot, or tap to place them in the centre.
+- Houses from the 26 styles or from the Builder, 1 to 3 storeys, viewed one floor at a time from above.
+- Move any house, furniture, tree, car, pool, person or pet; snap to 1 wah, 50 cm or off. Items dropped inside the house land on the open floor.
+- People have adjustable height, dogs a size, and colours can be changed. Collision stops items overlapping or passing through walls.
+- Autosave, undo and redo, JSON export and import.
+- Shortcuts: `R` rotate, `Delete` remove, `Ctrl/⌘+D` duplicate, `Ctrl/⌘+Z` undo, arrow keys nudge, `T` switch view.
+
+Code: `src/lib/sim/` (`types.ts` catalogue, `models.ts` people, animals and cars, `world.ts` engine) and `src/components/sim/Simulator.tsx`.
+
+## House styles
+
+26 styles in four regions (Modern, Thai, Japanese, European), defined in `STYLES` in `src/lib/plan/spec.ts`, with ready-made houses in `HOUSE_PRESETS` and layouts in `TEMPLATES`.
+
+The most recent additions are modelled on houses currently sold in the Pinklao-Salaya and Buddhamonthon area of Thailand:
+
+- **Modern Classic** (`classic`): cream plaster, stone base, framed upper floor, dark hip roof, side garage and front porch.
+- **Modern Japanese** (`gassho`): steep gassho-style gable, white walls, cedar upper floor, inspired by Shirakawa-go.
+
+Beyond the basics, a style can set a roof pitch (`pitch`), street-facing cross gables (`crossGables`), louvred shutters (`shutters`), a different garage wall material (`garageLook`), per-floor finishes and frames (`floorLooks`), a wood gable (`gableFinish`), the ridge direction (`ridge`), slatted screens (`screens`), roof planters (`planters`) and round windows (`roundWindows`).
+
+## Motion and performance
+
+- Spring animation with Motion in `src/lib/springs.ts` (`ENTER`, `UI` and `SOFT` presets; `arrive`, `arriveAll`, `popOpen`). Elements reveal on scroll with a spring, un-blur as they arrive, and the mobile menu and gallery cards pop in.
+- Page scrolling is native. Anchor links glide to the heading (`src/lib/smoothScroll.ts`); wheel smoothing is off by default and can be turned on with `initSmoothScroll({ wheel: true })`.
+- `src/lib/hoverPolish.ts`: one-shot hover animations always play to the end, and sliding buttons reset at once if the pointer leaves half-way.
+- Fonts (Montserrat, Noto Sans Thai) are self-hosted in `public/fonts/` and preloaded. Links are prefetched on hover (`astro.config.mjs`).
+- Pointer moves on the plan are coalesced to one update per frame, other rooms' furniture is memoised while dragging, and the rule check runs deferred so it never blocks a drag.
+- The landing page shows pre-rendered pictures from `public/renders/`, and the 3D studio only starts when it scrolls into view and pauses when it leaves.
+- Everything respects `prefers-reduced-motion`.
+
+### Re-rendering the pictures
+
+The still images (hero, house and catalogue thumbnails) are generated by `scripts/render-thumbs.mjs`. It needs Playwright (with Chromium) and Python with Pillow:
+
+```bash
+npm run build && npx astro preview &
+node scripts/render-thumbs.mjs                         # everything
+node scripts/render-thumbs.mjs house-classic,house-gassho   # only some
+```
+
+## Project structure
 
 ```
 src/
-  pages/index.astro          หน้าเว็บหลัก รวมทุก section
-  layouts/Layout.astro       <head>, ฟอนต์ Montserrat, global.css
-  styles/global.css          Tailwind + design tokens (สี, โหมดมืด) + คลาส .btn .wrap ฯลฯ
-  components/
-    Header / Hero / About / WhyChooseUs / Footer / Logo (.astro)   ส่วนที่เป็น static
-    HouseStudio.tsx          ตัวออกแบบบ้าน 3D (React island, client:visible)
-    HouseShot.tsx            ภาพนิ่งของบ้านที่เรนเดอร์จากโมเดล (Hero, About)
-    SearchBar.tsx            ช่องค้นหา → กรองการ์ด Residences
-    Residences.tsx           การ์ดบ้าน + ปุ่ม Buy now (โหลดแบบเข้า Studio)
-    Testimonials.tsx         รีวิว + จุดเลื่อน
-    ContactSection.tsx       ฟอร์มอีเมล + พื้นหลังภาพบ้านเบลอ
-    icons.tsx                ไอคอน SVG
-  lib/
-    house/data.ts            ประเภทห้อง, วัสดุพื้น, สี, แบบบ้านตั้งต้น, ผังห้อง, สูตรคำนวณราคา
-    house/geometry.ts        สร้างโมเดล 3D (ฐาน, สวน, ตัวบ้าน, ผนัง, เฟอร์นิเจอร์)
-    house/stage.ts           renderer + กล้อง isometric ที่ล็อกมุม
-    house/snapshots.ts       เรนเดอร์ภาพนิ่งครั้งเดียว ใช้ร่วมกันทุก island
-    events.ts                ส่งข้อความระหว่าง island (ค้นหา, โหลดแบบบ้าน)
+  pages/            index.astro, builder.astro, simulator.astro, dev/renders.astro
+  layouts/          Layout.astro (head, fonts, scroll reveals)
+  styles/           global.css (Tailwind, design tokens, dark mode, shared classes)
+  config.ts         site settings, e.g. the contact e-mail
+  components/       Header, Hero, About, WhyChooseUs, StyleGallery, HouseStudio,
+                    Faq, ContactSection, Footer, LogoMark, icons, builder/, sim/
+  lib/              plan/ (builder engine), sim/ (simulator), house/ (3D stage and
+                    snapshots), i18n.ts, springs.ts, smoothScroll.ts, hoverPolish.ts
+public/             fonts, renders, favicon, brand
+scripts/            render-thumbs.mjs
 ```
 
-## การใช้งานและ animation
+## Customising
 
-- ทุกหน้า responsive: มือถือ (≥ 360px), แท็บเล็ต, เดสก์ท็อป
-- Animation: เปลี่ยนหน้าแบบ view transition, เนื้อหาเลื่อนขึ้นตอน scroll, การ์ดลอยเมื่อ hover, ปุ่มยุบเมื่อกด, skeleton ระหว่างโหลดภาพ 3D, ของที่วางใหม่เด้งขึ้น, เส้นเลือกห้องวิ่ง — ปิดเองเมื่อผู้ใช้ตั้งค่า "ลดการเคลื่อนไหว" (prefers-reduced-motion)
-- คลาสที่ใช้ซ้ำอยู่ใน `src/styles/global.css`: `.tile` `.chip` `.icon-btn` `.lift` `.press` `.skeleton` `.glass` และ `animate-fade-up` `animate-pop-in` `animate-slide-left` `animate-float` ฯลฯ
-- ไอคอนทั้งหมดอยู่ใน `src/components/icons.tsx` (ห้อง, หลังคา, ขั้นตอน, หมวดแคตตาล็อก)
+- **Colours**: CSS variables in `src/styles/global.css` (there is a separate dark palette).
+- **Contact form**: set `CONTACT_EMAIL` in `src/config.ts`. While it is empty, the form copies the message for the visitor instead.
+- **Add or change a style**: edit `STYLES`, `HOUSE_PRESETS` and, if needed, `TEMPLATES` in `src/lib/plan/spec.ts`, add the Thai text in `src/lib/i18n.ts`, then re-render the thumbnail.
+- **Add a simulator item**: add it to `CATALOG` in `src/lib/sim/types.ts`; for a new model, add a builder in `models.ts` and a case in `buildModel()` in `world.ts`.
+- **Translations**: text in `.astro` files uses `<T en="…" th="…" />`; strings in code go through `src/lib/i18n.ts`.
 
-## House Builder (`/builder`)
+## Notes
 
-ทำทีละขั้น 5 ขั้น มีแถบขั้นตอนด้านบนและปุ่ม Back / Next ติดล่างจอ: **Land → House → Rooms → Style → Check**
-พื้นที่ทำงานสลับ Plan (ผังสถาปนิก) / 3D ได้ทุกขั้น บนมือถือผังอยู่ด้านบน แผงควบคุมอยู่ด้านล่าง
-ห้อง: ลากไอคอนห้องไปวางบนผัง (ถ้าวางทับห้องอื่นจะเลื่อนไปที่ว่างที่ใกล้ที่สุดให้) หรือแตะเพื่อวางในที่ว่าง
-
-
-รายละเอียดแต่ละส่วน:
-
-- **Size**: ขนาดที่ดิน (วา), ขนาดตัวบ้าน (ม.), จำนวนชั้น 1–3, ความสูงชั้น, ตำแหน่งบ้านบนที่ดิน (ระยะร่นหน้า/ซ้าย) — เลือกเริ่มจากแบบบ้านสำเร็จ 8 สไตล์ได้
-- **Rooms**: เทมเพลตผัง 7 แบบ (ย่อ/ขยายตามขนาดบ้าน), เพิ่มห้อง 13 ประเภท (รวมบันได โรงรถ ซักล้าง ห้องเก็บของ ระเบียง), แก้ประเภท/ขนาด/พื้น/สีผนัง/เฟอร์นิเจอร์รายห้อง
-- **Style**: 8 สไตล์, หลังคา 5 แบบ (Flat, Roof terrace, Gable, Hip, Mono-pitch), สีหลังคา ผนัง กรอบ ไม้, กระจกมาก/น้อย
-- **ผังสถาปนิก (SVG)**: ผนังหนา, ประตูพร้อมเส้นวงสวิง, หน้าต่าง, open plan, บันได (UP/DN), สัญลักษณ์เฟอร์นิเจอร์, เส้นบอกระยะ, ทิศเหนือ, สเกล — ลากห้องเพื่อย้าย ลากจุดขาวเพื่อปรับขนาด
-- **Site plan**: ที่ดิน ถนน เส้นระยะร่น 2 ม. และระยะจากเขตที่ดินทั้ง 4 ด้าน (เขียว/เหลือง/แดง) ลากบ้านเพื่อย้ายได้
-- **3D preview** หมุน 4 ด้าน เปิดดูทีละชั้น คลิกห้องเพื่อเลือก
-- **Advice** ตรวจตาม กฎกระทรวงฉบับที่ 55 (พ.ศ. 2543): ที่ว่าง ≥ 30% ของพื้นที่ชั้นที่มากที่สุด, ผนังมีช่องเปิดห่างเขต ≥ 2 ม. (≥ 3 ม. ถ้าสูงเกิน 9 ม.), ผนังทึบ ≥ 50 ซม., ห้องนอน ≥ 8 ม² และด้านแคบ ≥ 2.50 ม., ห้องน้ำรวมส้วม ≥ 1.5 ม² กว้าง ≥ 90 ซม., ความสูงชั้น ≥ 2.60 ม., บันไดกว้าง ≥ 80 ซม. ลูกตั้ง ≤ 20 ซม. ลูกนอน ≥ 22 ซม. ช่วงละไม่เกิน 3 ม., ทางเดิน ≥ 1.00 ม. + คำแนะนำความสะดวก (ขนาดครัว ห้องนั่งเล่น โรงรถ ฯลฯ) — กฎอยู่ใน `src/lib/plan/rules.ts`
-- ปุ่ม **Place in simulator** ส่งที่ดิน+บ้านไปเปิดใน simulator, **Save design** เก็บใน "My designs"
-
-โค้ด: `src/lib/plan/` (`spec.ts` ข้อมูล/สไตล์/เทมเพลต/ประตูหน้าต่างอัตโนมัติ, `rules.ts`, `build3d.ts` สร้างบ้าน 3D จาก spec, `specStage.ts`, `storage.ts`) และ `src/components/builder/`
-
-## House Simulator (`/simulator`)
-
-หน้าแบบเกมจำลองที่ดิน เปิดจากปุ่ม "Open the house simulator" ในหน้าแรก
-
-- กำหนดขนาดที่ดินเป็น **วา** (กว้าง × ลึก) แสดงพื้นที่เป็น ตร.ว., ไร่-งาน-วา และ ม²
-- กริดโปร่งแสง **1 ช่อง = 1 ตร.ว. (2 × 2 ม.)** เส้นเข้มขึ้นทุก 5 วา
-- **3D view** ดูแบบ isometric หมุนได้ทีละ 90° (4 ด้าน) / **Top view · move** มุมบนสำหรับลากย้ายเท่านั้น
-- **ลากจากแคตตาล็อก (มีรูปตัวอย่าง) ไปวางบนที่ดินได้เลย** หรือแตะเพื่อวางกลางจอ — มือถือแคตตาล็อกเป็นแผงเลื่อนด้านล่าง แท็บหมวดเป็นไอคอน
-- ครั้งแรกที่เปิดมีหน้าสอนใช้งาน 3 ขั้น (เปิดซ้ำได้จากปุ่ม ⓘ)
-- ลากของในมุม 3D แล้วจะสลับเป็นมุมบนให้อัตโนมัติระหว่างย้าย, มีแถบเครื่องมือลอย (หมุน/ทำซ้ำ/ลบ) ข้างของที่เลือก
-- บ้าน 8 สไตล์ + แบบที่ออกแบบเองจาก Builder, สลับแบบบ้านได้, บ้าน 1–3 ชั้น เปิดดูทีละชั้นจากมุมบน
-- ลากบ้าน เฟอร์นิเจอร์ ต้นไม้ รถ สระ คน หมา แมว ได้ทุกชิ้น, snap ได้ 1 วา / 50 ซม. / ปิด
-- ลากของเล็ก (เฟอร์นิเจอร์ คน สัตว์) เข้าไปในบ้านแล้วจะวางบนชั้นที่เปิดอยู่ ลากออกมาก็ไปอยู่ในสวน
-- คนปรับส่วนสูงได้ 60–220 ซม., หมาเลือกขนาด S/M/L, เปลี่ยนสีขน/เสื้อ/รถได้
-- บันทึกอัตโนมัติใน localStorage, Undo/Redo, Export/Import เป็นไฟล์ JSON
-- คีย์ลัด: R หมุน, Delete ลบ, Ctrl/⌘+D ทำซ้ำ, Ctrl/⌘+Z ย้อนกลับ, ลูกศรขยับ, T สลับมุมมอง
-
-โค้ดอยู่ที่ `src/lib/sim/` (`types.ts` ข้อมูลและแคตตาล็อก, `models.ts` โมเดลคน/สัตว์/รถ, `world.ts` engine) และ `src/components/sim/Simulator.tsx` (UI)
-
-## ปรับแต่งที่พบบ่อย
-
-- **เพิ่ม/แก้แบบบ้าน**: แก้ `PRESETS` ใน `src/lib/house/data.ts`
-- **เพิ่มของในแคตตาล็อกซิมูเลเตอร์**: เพิ่มใน `CATALOG` (`src/lib/sim/types.ts`) และถ้าเป็นโมเดลใหม่ เพิ่ม builder ใน `models.ts` กับ `buildModel()` ใน `world.ts`
-- **เพิ่มประเภทห้องหรือเฟอร์นิเจอร์**: เพิ่มใน `TYPES` (data.ts) แล้วเพิ่ม `case` ใน `furnish()` (geometry.ts)
-- **สีของเว็บ**: แก้ตัวแปรใน `src/styles/global.css` (มีชุดสีโหมดมืดแยกไว้)
-- **ฟอร์มอีเมล**: ยังไม่ได้ต่อกับระบบส่งอีเมล ดู TODO ใน `ContactSection.tsx`
-- **รีวิว**: เป็นข้อความตัวอย่าง ควรเปลี่ยนเป็นรีวิวจริงก่อนเปิดใช้งาน (`Testimonials.tsx`)
-- การบันทึกแบบ (Save design) เก็บใน localStorage ของเบราว์เซอร์นั้นเท่านั้น
-
-## อัปเดตล่าสุด
-
-- **ภาษาไทย / อังกฤษ** ปุ่มสลับ TH/EN ทุกหน้า (`src/lib/i18n.ts`, ข้อความในไฟล์ .astro ใช้ `<T en th />`)
-- **ผังบ้านบนมือถือ** ใช้สองนิ้วซูม ลากนิ้วเดียวเลื่อนผัง (เมื่อซูมอยู่) ปุ่ม + / − / พอดีจอ และหมุนล้อเมาส์ซูมได้
-- **ห้องตัว L และผนังเอียง** เลือกรูปทรงห้อง มุม และขนาดส่วนที่ตัด
-- **ย้ายหน้าต่าง/ประตู** กด “ย้ายหน้าต่างเอง” แล้วลากจุดสีฟ้าบนผัง เปลี่ยนชนิด (หน้าต่าง กระจกบานใหญ่ ช่องแสงสูง ประตู) และความกว้าง
-- **ครัว/ห้องน้ำ** หลายรูปแบบ: ครัวแถวเดียว ตัว L ตัว U ไอส์แลนด์ ครัวไทย / ห้องน้ำอ่างอาบน้ำ ฝักบัว แยกเปียก-แห้ง อ่างคู่
-- **แบบบ้าน 26 สไตล์** ไทย ญี่ปุ่น ยุโรป โมเดิร์น รวมเรือนไทยใต้ถุนสูง บ้านแฝด บ้านชั้นครึ่ง มินกะ โมเดิร์นคลาสสิก โมเดิร์นเจแปนนีส ฯลฯ พร้อมผิวผนัง (ไม้ อิฐ หิน ไม้ฝา โครงไม้) และหลังคา 8 แบบ
-- **Simulator กันชน** ของไม่ซ้อนกันและไม่ทะลุผนัง (ปิดได้ที่ปุ่ม “กันชน”)
-- **โหลดเร็วขึ้น** หน้าแรกใช้ภาพที่เรนเดอร์ไว้ล่วงหน้าใน `public/renders/` ไม่ต้องโหลด 3D จนกว่าจะเลื่อนถึงสตูดิโอ
-  สร้างภาพใหม่: `npm run build && npx astro preview` แล้ว `node scripts/render-thumbs.mjs` (ต้องมี Playwright และ Python Pillow)
-- **Animation แบบ tryalcove.com** หัวเว็บลอยขึ้น ข้อความค่อยๆ ขึ้นทีละส่วน ไฮไลต์ใต้คำสำคัญ วงปากกาวาดรอบคำ ปุ่มที่ไอคอนเลื่อนออกและลูกศรเลื่อนเข้า ไอคอนขยับเมื่อชี้ (ใน `src/styles/global.css` ส่วน “Alcove-style motion”)
-- **ลื่นแบบ ultra-smooth**
-  - เลื่อนหน้าแรกด้วยล้อเมาส์หรือทัชแพดแบบมีแรงเฉื่อย (`src/lib/smoothScroll.ts`) และกดลิงก์ในหน้าแล้วเลื่อนนุ่มๆ ไปหยุดใต้หัวเว็บ
-  - หมุนบ้าน 3 มิติด้วยสปริง กดหมุนรัวๆ ก็ต่อเนื่อง ไม่สะดุด (`src/lib/motion.ts`)
-  - ซูมผังและซูมในซิมูเลเตอร์ค่อยๆ เลื่อนไปถึง
-  - ปัดผังแรงๆ แล้วผังไหลต่ออีกนิด
-  - สลับมุมมองหรือสลับชั้นในซิมูเลเตอร์มีการเปลี่ยนภาพแบบนุ่ม
-  - easing ทั้งเว็บใช้ `--ease-out` และ `--ease-spring`
-  - เปลี่ยนหน้ามี transition
-- **ปรับเป็นเว็บออกแบบบ้าน (ไม่ใช่เว็บขายบ้าน)**
-  - **โลโก้ใหม่ ClovedBuild:** รูปบ้านมีดอกกานพลูอยู่ข้างใน อยู่ใน `src/components/LogoMark.tsx` และ `public/favicon.svg`
-  - **หน้าแรก:**
-    - วิธีใช้ 5 ขั้นตอน
-    - แกลเลอรีแบบบ้านทุกสไตล์ (`StyleGallery.tsx`) กดแล้วเปิดใน `/builder?preset=…` หรือ `/simulator?preset=…`
-    - ทำอะไรได้บ้าง
-    - คำถามที่พบบ่อย (`Faq.astro`)
-    - แบบฟอร์มติดต่อ
-  - **อีเมลปลายทางของฟอร์มติดต่อ:** ใส่ที่ `src/config.ts` (`CONTACT_EMAIL`) ถ้ายังว่าง ฟอร์มจะคัดลอกข้อความให้ผู้ใช้แทน
-  - **หัวเว็บ:** เมนูไฮไลต์ส่วนที่กำลังดูอยู่ และมีเมนูบนมือถือ
-  - **ท้ายเว็บ:** ลิงก์ไปได้จริง และมีปุ่มแชร์ LINE / Facebook / X / คัดลอกลิงก์
-  - **ไฟล์ที่เลิกใช้แล้ว ลบทิ้งได้:** `SearchBar.tsx`, `Residences.tsx`, `Testimonials.tsx`, `HouseShot.tsx`
-- **แบบบ้านใหม่ 6 แบบจากภาพตัวอย่าง** โมเดิร์นหรู 3 ชั้น (กรอบหิน ชั้นบนโลหะสีเข้ม ระแนง สวนบนหลังคา จอดรถ 4 คัน) / ทาวน์โฮมหินอ่อน / โมเดิร์นกล่อง 2 ชั้น / บ้านชั้นเดียวหน้าจั่วกรุไม้ + ที่จอดรถหลังคาแบน / บ้านชั้นเดียวมีระเบียงหน้า / บ้านชั้นเดียวหน้าต่างวงกลม
-  - ห้องใหม่ "โรงจอดรถ" (ไม่มีผนัง มีเสา จอดรถได้ตามความกว้าง)
-  - หน้าต่างแบบใหม่ "กระจก+ระแนง" และ "วงกลม"
-  - ผิวผนังใหม่ หินอ่อน / แผ่นโลหะ, ผิวผนังและกรอบแยกรายชั้น (`floorLooks`), หน้าจั่วกรุไม้ (`gableFinish`), ทิศสันหลังคา (`ridge`), กระถางต้นไม้บนหลังคา (`planters`)
-  - สร้างภาพตัวอย่างเฉพาะบางหลัง: `node scripts/render-thumbs.mjs house-luxe,house-cottage`
-- **เพิ่มอีก 4 แบบ** ฟาร์มเฮาส์โมเดิร์น (อิฐขาว หน้าจั่วชันหลายจั่ว) / กระท่อมวิกตอเรียน (ไม้ตีแนวตั้ง ชั้นครึ่ง บานเกล็ด) / โคโลเนียลโรงรถอิฐ (ระเบียงยาว หน้าต่างวงกลม ประตูโรงรถ) / บ้านไทยยกใต้ถุนโมเดิร์น (ชั้นบนกรุไม้ เสาขาว จั่วซ้อน)
-  - ความสามารถใหม่: ความชันหลังคา (`pitch`), หน้าจั่วย่อยหันหน้าบ้าน (`crossGables`), บานเกล็ดข้างหน้าต่าง (`shutters`), ผนังโรงรถคนละวัสดุ (`garageLook`), ประตูโรงรถ
-- **วางประตูและเสาได้อิสระ** (ขั้นตอน "ห้อง")
-  - **ประตู:** เลือกห้อง → "วางประตูเอง" แล้วเพิ่ม ย้าย หรือลบประตูได้ทุกบาน (`PRoom.doors`)
-    - ทุกประตูบนผังมีจุดสีส้ม ลากย้ายได้ทันทีโดยไม่ต้องกดอะไรก่อน (ห้องนั้นจะเปลี่ยนเป็นประตูที่วางเอง) ประตูทางเข้าจะเลื่อนไปได้เฉพาะผนังด้านนอก
-    - ลากจุดสีส้มไปตามผนังไหนก็ได้ ข้ามมุมห้องได้ หรือเลือกผนังและตำแหน่งในแผง
-    - ชนิดประตู: บานเปิด / บานคู่ / บานเลื่อน / ช่องโล่ง ปรับความกว้าง และกลับทิศเปิดได้
-    - ประตูบนผนังที่ติดห้องอื่นจะเชื่อมสองห้อง ประตูบนผนังด้านนอกจะเป็นทางเข้าบ้าน
-    - ลบประตูหมดได้ ระบบตรวจแบบจะเตือนว่าห้องไม่มีประตู กด "กลับเป็นอัตโนมัติ" เพื่อคืนค่าเดิม
-  - **เสา:** ลากเสาเหลี่ยมหรือเสากลมลงผังได้ทุกที่ ปรับขนาดและตำแหน่งได้ (`HouseSpec.posts`)
-    - เสาขึ้นเป็นโมเดล 3D จากพื้นถึงฝ้า และในโหมดจำลอง เฟอร์นิเจอร์จะชนเสา
-- **ย้ายและหมุนเฟอร์นิเจอร์ได้** (ขั้นตอน "ห้อง" → เลือกห้อง)
-  - บนผัง แตะชิ้นเฟอร์นิเจอร์ (กรอบเส้นประสีฟ้า) เพื่อเลือก แล้วลากไปวางตรงไหนก็ได้ในห้อง กด ↻ เพื่อหมุนทีละ 90°
-  - ลากชิ้นที่ยังไม่ได้เลือกจะเป็นการย้ายทั้งห้องเหมือนเดิม
-  - เฟอร์นิเจอร์จะอยู่ในขอบห้องเสมอ ตำแหน่งใหม่ขึ้นทั้งผัง 3D และตอนส่งไปโหมดจำลอง (`PRoom.place`)
-  - "คืนตำแหน่งเดิม" ในหัวข้อเฟอร์นิเจอร์
-- **ลื่นขึ้น:** การลากบนผังอัปเดตเฟรมละครั้ง, เฟอร์นิเจอร์ห้องอื่นไม่วาดใหม่ตอนลาก, การตรวจแบบทำตามหลังไม่บล็อกการลาก, โหลดหน้าล่วงหน้าเมื่อชี้ลิงก์ (`prefetch` ใน `astro.config.mjs`)
-- **จัดหน้าแรกใหม่**
-  - ทุกส่วนเว้นระยะเท่ากัน (`.sec` ใน `global.css`) และสลับสีพื้นหลัง แต่ละส่วนจึงแยกกันชัดเจน
-  - เมนูบนมีครบทุกส่วน: หน้าแรก / วิธีใช้ / แบบบ้าน / ทำอะไรได้ / ลองแต่งห้อง / คำถาม / ติดต่อ
-    - จอเล็กกว่า 1280px ใช้ปุ่มเมนู ☰
-    - กดแล้วเลื่อนไปถึงหัวข้อพอดีแม้ส่วนอื่นกำลังโหลด (`smoothScroll.ts` เล็งที่ตัวหัวข้อ + `overflow-anchor: none`)
-  - แกลเลอรีแบบบ้านแสดง 8 แบบ (มือถือ 4 แบบ) มีปุ่ม "ดูแบบบ้านทั้งหมด" และ "ย่อกลับ"
-  - วงกลมขีดเน้นคำเล็กลง ไม่ทับบรรทัดข้างบน
-- **ปรับตามที่แกะจาก tryalcove.com** (ดูเฉพาะโค้ดที่เว็บส่งมา ไม่ได้คัดลอกโค้ดเขา)
-  - เลื่อนด้วยล้อเมาส์แบบปกติของเบราว์เซอร์ (เขาไม่ใช้ไลบรารีเลื่อนนุ่ม) ยังคงเลื่อนนุ่มเมื่อกดลิงก์ในหน้า; เปิดแบบเดิมได้ด้วย `initSmoothScroll({ wheel: true })`
-  - ฟอนต์เก็บในเว็บเอง (`public/fonts/`, ฟอนต์แปรผันไฟล์เดียวทุกน้ำหนัก, สัญญาอนุญาต SIL OFL) และโหลดก่อน แทน Google Fonts
-  - `--ease-spring` เด้งน้อยลง (1.45 → 1.2) และแอนิเมชันตอนชี้สั้นลง (0.5–0.7s → 0.4–0.5s)
-  - `src/lib/hoverPolish.ts`: ไอคอนในส่วน "ทำอะไรได้" เล่นจนจบแม้ชี้ผ่านแป๊บเดียว, ปุ่มเลื่อนที่ชี้แล้วออกกลางทางจะกลับทันทีไม่เล่นย้อนช้าๆ
-  - ภาพ 3D ในหน้าแรกหยุดวาดเมื่อเลื่อนพ้นจอ
-- **แอนิเมชันสปริงด้วย Motion** (motion.dev ไลบรารีเดียวกับ tryalcove.com) — ต้องรัน `npm install` ครั้งหนึ่ง
-  - `src/lib/springs.ts`: ค่าสปริงสามแบบ (ENTER 150/14, UI 160/18, SOFT 150/20) และฟังก์ชัน `arrive`, `arriveAll`, `popOpen`
-  - หัวข้อที่โผล่ตอนเลื่อนลงมาจะเด้งเข้าแบบสปริง (ลอยขึ้น + ชัดขึ้นจากเบลอ), เมนูมือถือเด้งเปิด, การ์ดแบบบ้านเด้งเข้าทีละใบเมื่อเปลี่ยนแท็บหรือกด "ดูทั้งหมด"
-  - การเลื่อนหน้ายังเป็นแบบปกติของเบราว์เซอร์ เหมือน Alcove
-- **โลโก้ใหม่: แมวดำรัวแป้นแล็ปท็อป** (`src/components/LogoMark.tsx`, ต้นฉบับ `public/brand/clovedbuild-logo.png`)
-  - แปลงเป็นเวกเตอร์ ใช้สีตามธีม (แมวดำบนพื้นสว่าง แมวขาวในโหมดมืด)
-  - หัวเว็บ หน้าออกแบบ ซิมูเลเตอร์: แมว + ชื่อเรียงแนวนอน (มือถือในหน้าแอปเหลือแค่แมว); ท้ายเว็บ: แมวอยู่บนชื่อ
-  - ไอคอนแท็บ (`public/favicon.svg`): แมวขาวบนพื้นกรมท่าเข้ม
-
-### แบบบ้านอิงโครงการจริง (แทนทิวดอร์/ดัตช์)
-แทน English Tudor และ Dutch Barn ด้วยสไตล์ที่ขายอยู่จริงในไทยแถวปิ่นเกล้า-ศาลายา-พุทธมณฑล
-- **Modern Classic** (`classic`) ปูนสีครีม ฐานหิน ชั้นบนมีกรอบนูน หลังคาปั้นหยาสีเข้ม โรงรถข้างบ้านและมุขหน้า อิงกลุ่ม Modern Classic/Luxury เช่น ศุภาลัย เอเลแกนซ์ บรมราชชนนี, ธนาเรสซิเดนซ์
-- **Modern Japanese** (`gassho`) หน้าจั่วชันแบบกัสโช ผนังขาว ชั้นบนไม้ซีดาร์ อิง เวนิว ไอดี ปิ่นเกล้า-ศาลายา (แรงบันดาลใจจากหมู่บ้านชิรากาวะโกะ)
-ภาพตัวอย่างสร้างใหม่ด้วย `node scripts/render-thumbs.mjs house-classic,house-gassho`
+- Saved designs live in the browser's `localStorage` only.
+- Unused legacy components that can be deleted: `SearchBar.tsx`, `Residences.tsx`, `Testimonials.tsx`, `HouseShot.tsx`.
+- The logo is a black cat typing on a laptop (`src/components/LogoMark.tsx`, original artwork in `public/brand/`). It is traced to vector and follows the theme colour.
