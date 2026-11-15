@@ -1,7 +1,7 @@
 // Real-world checks for a house design.
 // Legal minimums follow Thailand's Ministerial Regulation No. 55 (B.E. 2543) under the Building Control Act;
 // comfort tips are common design practice. Local rules (e.g. Bangkok) can be stricter.
-import { area, floorRect, houseHeight, mainRect, pointInRoom, stairVoids, typeLabel, type HouseSpec, type PRoom } from './spec';
+import { area, floorEdges, floorRect, houseHeight, mainRect, pointInRoom, stairVoids, typeLabel, type HouseSpec, type PRoom } from './spec';
 import { t, tr } from '../i18n';
 
 export type Level = 'error' | 'warn' | 'tip';
@@ -73,6 +73,21 @@ export function checkDesign(s: HouseSpec): Advice[] {
   for (let f = 1; f < s.floors; f++) for (const v of stairVoids(s, f)) {
     const blocked = (s.levels[f] ?? []).find((u) => u.type !== 'stairs' && u.x < v.x + v.w - 0.05 && u.x + u.w > v.x + 0.05 && u.z < v.z + v.d - 0.05 && u.z + u.d > v.z + 0.05);
     if (blocked) add({ level: 'error', floor: f, roomId: blocked.id, title: tr(`${nm(blocked)} sits over the stairwell`, `${nm(blocked)}ทับช่องบันได`), detail: tr('The stairs from below come up here. Move the room or make this spot a Stairs room.', 'บันไดจากชั้นล่างขึ้นมาตรงนี้ เลื่อนห้อง หรือเปลี่ยนจุดนี้เป็นห้องบันได') });
+  }
+
+  /* --- doors to the outside above the ground floor need a balcony --- */
+  // A door on an outside wall of an upper floor opens onto thin air. It is only safe when a balcony (a Terrace room)
+  // lies beyond it, and a door onto a balcony sits on the wall the room shares with that Terrace, so it is not an outside door.
+  for (let f = 1; f < s.floors; f++) {
+    const hasBalcony = (s.levels[f] ?? []).some((r) => r.type === 'terrace');
+    for (const d of floorEdges(s, f).doors) {
+      if (!d.front || d.owner.type === 'terrace') continue;
+      const n = nm(d.owner);
+      add({ level: 'error', floor: f, roomId: d.owner.id, title: tr(`Door to the outside on floor ${f + 1} has no balcony`, `ประตูออกนอกบ้านชั้น ${f + 1} ไม่มีระเบียง`),
+        detail: hasBalcony
+          ? tr(`A door on an upper floor must open onto a balcony. Move the door of ${n} to the wall it shares with the Terrace, or put a Terrace next to this door.`, `ประตูชั้นบนต้องเปิดออกสู่ระเบียง ย้ายประตูของ${n}ไปที่ผนังที่ติดกับห้อง “ระเบียง” หรือวางระเบียงไว้ด้านนอกประตูนี้`)
+          : tr(`A door on an upper floor must open onto a balcony. Add a Terrace room next to ${n} and put the door on the wall they share, or remove this door.`, `ประตูชั้นบนต้องเปิดออกสู่ระเบียง เพิ่มห้อง “ระเบียง” ติดกับ${n}แล้วย้ายประตูไปที่ผนังที่ใช้ร่วมกัน หรือลบประตูนี้`) });
+    }
   }
 
   /* --- rooms --- */

@@ -37,7 +37,7 @@ A 5-step flow with a step bar on top and Back / Next buttons at the bottom. The 
   - **Posts**: drop square or round posts anywhere; they are modelled floor to ceiling and block furniture in the simulator.
   - **Furniture**: tap a piece, drag it anywhere inside the room, rotate it in 90° steps, or reset it.
 - **Style**: roof (flat, roof terrace, gable, hip, mono-pitch, Thai, hip-and-gable, gambrel), wall finish (plaster, wood, siding, brick, half-timber, stone, marble, metal), colours, and amount of glass.
-- **Check**: a rule check against Thai Ministerial Regulation No. 55 (B.E. 2543) plus comfort advice. Examples: open space of at least 30% of the largest floor, openings at least 2 m from the boundary (3 m above 9 m height), bedrooms of at least 8 m² and 2.5 m wide, ceiling height of at least 2.6 m, stair and corridor dimensions. The rules live in `src/lib/plan/rules.ts`.
+- **Check**: a rule check against Thai Ministerial Regulation No. 55 (B.E. 2543) plus comfort advice. Examples: open space of at least 30% of the largest floor, openings at least 2 m from the boundary (3 m above 9 m height), bedrooms of at least 8 m² and 2.5 m wide, ceiling height of at least 2.6 m, stair and corridor dimensions, and a door to the outside on an upper floor needs a balcony (a Terrace room) beyond it. The rules live in `src/lib/plan/rules.ts`.
 
 Designs are saved in the browser (`localStorage`) under "My designs". **Place in simulator** sends the plot and house to the simulator.
 
