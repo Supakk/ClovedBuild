@@ -323,7 +323,13 @@ html[lang="th"] body { line-height: 1.6; }
   .icon-btn:not(:disabled):hover > svg { rotate: -12deg; }
 }
 
-html { scroll-padding-top: 88px; }
+html { scroll-padding-top: 88px; --hdr-h: 77px; }
+/* Large screens: the page column and the first screen grow with the window instead of floating in empty space. */
+@media (min-width: 1700px) { .wrap { max-width: 1360px; } .hero-full h1 { font-size: 64px; } .hero-full p { font-size: 15px; max-width: 440px; } }
+@media (min-width: 2200px) { .wrap { max-width: 1640px; } .hero-full h1 { font-size: 80px; } .hero-full p { font-size: 18px; max-width: 540px; } }
+/* The first section fills the rest of the screen below the sticky header, whatever the window size,
+   with its content centred. It grows past the screen only when the content is taller than the window. */
+.hero-full { min-height: calc(100vh - var(--hdr-h)); min-height: calc(100svh - var(--hdr-h)); display: flex; flex-direction: column; justify-content: center; }
 html, body { overflow-x: clip; }
 @layer components { .bs-label { white-space: nowrap; } }
 /* Logo: the clove turns and the roof lifts a touch on hover. */
