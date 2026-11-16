@@ -4,6 +4,39 @@ A house-design website with a 3D, isometric home designer: pick a plot, shape th
 
 Built with **Astro 7, React 19, Tailwind CSS 4, three.js** and **Motion** (motion.dev) for spring animation. The interface is available in English and Thai.
 
+## Screenshots
+
+### Landing page
+![Landing page](docs/images/home.png)
+
+The home page opens with the headline and a 3D house, then walks through how it works. A sticky menu highlights the section you are reading and works in English and Thai.
+
+![House style gallery](docs/images/styles.png)
+
+The style gallery lists the 26 house styles (Modern, Thai, Japanese, European). Pick one to open it in the Builder or the Simulator.
+
+### House Builder
+![Builder, Rooms step](docs/images/builder-rooms.png)
+
+The **Rooms** step shows an architect-style plan. Drag rooms in from the panel, move them, resize them, and place doors, windows, posts and furniture by hand. Every door has a handle; the dimension lines, entry mark, scale bar and north arrow update as you edit.
+
+![Builder, Style step](docs/images/builder-style.png)
+
+The **Style** step swaps the look of the whole house (roof, walls, colours, glass) and shows the result in 3D next to the style cards. Each floor can be viewed on its own.
+
+![Builder, Check step](docs/images/builder-check.png)
+
+The **Check** step scores the design against Thai building rules, lists what must be fixed, what to check and a few tips, and shows area, rooms and a rough cost. From here you can save the design or send it to the Simulator.
+
+### House Simulator
+![Simulator, 3D view](docs/images/simulator-3d.png)
+
+The Simulator puts the house on a plot measured in wah. Drag houses, furniture, trees, cars, people and pets from the catalogue and drop them on the land. The grid is one square wah per cell.
+
+![Simulator, top view](docs/images/simulator.png)
+
+Top view is for precise moving. It opens the roof or a single floor so you can place things inside the house, with snapping (1 wah, 50 cm or free) and collision ("Bump") so items do not overlap or pass through walls. A selected item gets its own panel: turn, copy, delete, name, height and colour.
+
 ## Getting started
 
 Requires Node.js **22.23.4 or newer**.
